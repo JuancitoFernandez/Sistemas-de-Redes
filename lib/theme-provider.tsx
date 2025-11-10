@@ -44,7 +44,9 @@ export function ThemeProvider({ children, defaultTheme = 'light' }: ThemeProvide
 
   const handleSetTheme = (newTheme: Theme) => {
     setTheme(newTheme);
-    localStorage.setItem('theme', newTheme);
+    if (mounted) {
+      localStorage.setItem('theme', newTheme);
+    }
     applyTheme(newTheme);
   };
 
@@ -53,11 +55,8 @@ export function ThemeProvider({ children, defaultTheme = 'light' }: ThemeProvide
     handleSetTheme(newTheme);
   };
 
-  // Evitar flash de contenido sin tema
-  if (!mounted) {
-    return <>{children}</>;
-  }
-
+  // Siempre proporcionar el contexto, incluso antes de montar
+  // Esto evita el error "useTheme must be used within a ThemeProvider"
   return (
     <ThemeContext.Provider value={{ theme, setTheme: handleSetTheme, toggleTheme }}>
       {children}
@@ -72,4 +71,5 @@ export function useTheme() {
   }
   return context;
 }
+
 
